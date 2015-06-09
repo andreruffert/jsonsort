@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="keywords" content="json, sort, format, json sort, json format, online tool">
+  <meta name="description" content="JSONSort is a tool that helps to sort/format your JSON">
+  <title>JSONSort - Sort your JSON</title>
+  <style>
+    html {
+      box-sizing: border-box;
+      font-size: 14px;
+      font-family: "Helvetica Neue", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    *,
+    *:before,
+    *:after {
+      box-sizing: inherit;
+    }
+
+    ::-webkit-input-placeholder { color: currentColor; }
+             ::-moz-placeholder { color: currentColor; }
+          -ms-input-placeholder { color: currentColor; }
+         input:-moz-placeholder { color: currentColor; }
+
+    body {
+      background: -webkit-linear-gradient(90deg, #5C258D 10%, #4389A2 90%);
+      background:    -moz-linear-gradient(90deg, #5C258D 10%, #4389A2 90%);
+      background:     -ms-linear-gradient(90deg, #5C258D 10%, #4389A2 90%);
+      background:      -o-linear-gradient(90deg, #5C258D 10%, #4389A2 90%);
+      background:         linear-gradient(90deg, #5C258D 10%, #4389A2 90%);
+      color: #444444;
+      margin: 0;
+      overflow: hidden;
+      overflow-y: auto;
+    }
+
+    a {
+      color: currentColor;
+    }
+
+    svg {
+      fill: currentColor;
+    }
+
+    header {
+      background: white;
+      height: 75px;
+      padding: 2em;
+    }
+
+    main {
+      position: relative;
+    }
+
+    .editor {
+      border: 0;
+      color: white;
+      background: transparent;
+      width: 100%;
+      height: calc(99vh - (75px + 45px));
+      resize: none;
+      padding: 2em;
+      outline: 0;
+      white-space: pre;
+      word-wrap: break-word;
+      font-family: monaco, monospace;
+      font-size: .9em;
+    }
+
+    .button {
+      background-color: rgba(255, 255, 255, .1);
+      border: 0;
+      border-radius: 3px;
+      color: white;
+      cursor: pointer;
+      font-size: 1em;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      outline: 0;
+      transition: background .2s ease-in-out;
+      vertical-align: baseline;
+      padding: 8px;
+    }
+    .button:hover {
+      background-color: rgba(255, 255, 255, .5);
+    }
+
+    footer {
+      border-top: solid 1px rgba(255, 255, 255, .1);
+      color: white;
+      font-size: .8em;
+      text-align: right;
+      height: 45px;
+      padding: 15px;
+      vertical-align: baseline;
+    }
+  </style>
+  <link rel="shortcut icon" href="/jsonsort/favicon.ico">
+</head>
+<body>
+  <header>
+    { <strong>JSONSort</strong>: <i>Sort your JSON</i> }
+  </header>
+  <main>
+    <textarea class="editor" id="js-editor" cols="30" rows="10" placeholder="" spellcheck="false" wrap="off"></textarea>
+    <button class="button" id="js-btn-sort" title="Sort/format the current data">
+      <svg width="48" height="48" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/>
+        <path d="M0 0h24v24H0z" fill="none"/>
+      </svg>
+    </button>
+    <button class="button" id="js-btn-clear" title="Delete the current data" style="top: 100px;">
+      <svg width="48" height="48" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        <path d="M0 0h24v24H0z" fill="none"/>
+      </svg>
+    </button>
+  </main>
+  <footer>
+    A little thing by <a href="https://twitter.com/andreruffert" target="_blank">@andreruffert</a>
+  </footer>
+  <script>
+  (function() {
+    'use strict';
+
+    /**
+     * Determine if string is valid json.
+     * @param  {String}
+     * @return {Boolean} Returns `true` if string is valid JSON, else `false`.
+     */
+    function isJson(str) {
+      try {
+        JSON.parse(str);
+      } catch(e) {
+        return false;
+      }
+      return true;
+    }
+
+    /**
+     * Recursivly sort an object by keys.
+     * @param  {Object}
+     * @return {Object}
+     */
+    function sortObject(object) {
+      var sortedObj = {};
+      var keys = Object.keys(object);
+
+      keys.sort(function(key1, key2) {
+        key1 = key1.toLowerCase(), key2 = key2.toLowerCase();
+        return ( key1 < key2 ) ? -1 : (key1 > key2) ? 1 : 0;
+      });
+
+      keys.forEach(function(key) {
+        if (typeof object[key] === 'object' && !(object[key] instanceof Array)) {
+          sortedObj[key] = sortObject(object[key]);
+        } else {
+          sortedObj[key] = object[key];
+        }
+      });
+
+      return sortedObj;
+    }
+
+    var editor = document.getElementById('js-editor');
+    var btnSort = document.getElementById('js-btn-sort');
+    var btnClear = document.getElementById('js-btn-clear');
+    var getStartedText = [
+      '// Hello.',
+      '// This is JSONSort, a tool that helps to sort/format your JSON.',
+      '// To get started, simply enter some JSON.',
+      '// Your JSON will be sorted/formatted.'
+    ].join('\n');
+
+    editor.placeholder = getStartedText;
+
+    // Set the interval and autosave every second
+    setInterval(function() {
+      localStorage.setItem('autosave', editor.value);
+    }, 1000);
+
+    // If there is data available retrieve the item
+    if (localStorage.getItem('autosave')) {
+      editor.value = localStorage.getItem('autosave');
+    }
+
+    btnSort.addEventListener('click', function() {
+      if (!isJson(editor.value)) {
+        console.error('Whoops! No valid JSON');
+        return;
+      }
+      editor.value = JSON.stringify(sortObject(JSON.parse(editor.value)), null, 2);
+    }, false);
+
+    btnClear.addEventListener('click', function() {
+      editor.value = '';
+      localStorage.removeItem('autosave');
+    }, false);
+
+  })();
+  </script>
+</body>
+</html>
