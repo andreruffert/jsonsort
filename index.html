@@ -202,6 +202,19 @@
       localStorage.removeItem('autosave');
     }, false);
 
+
+    (function consoleHints() {
+      var banner = '      _  _____  ____  _   _  _____            _\n     | |/ ____|/ __ \\| \\ | |/ ____|          | |\n     | | (___ | |  | |  \\| | (___   ___  _ __| |_\n _   | |\\___ \\| |  | | . ` |\\___ \\ / _ \\| \'__| __|\n| |__| |____) | |__| | |\\  |____) | (_) | |  | |_\n \\____/|_____/ \\____/|_| \\_|_____/ \\___/|_|   \\__|\n\n\n';
+      //var banner = '{  }';
+      console.log('%c' + banner, 'color: #5C258D;');
+      console.group('%cContribute:', 'color: #505697;');
+      console.log('https://github.com/andreruffert/jsonsort');
+      console.groupEnd();
+      console.group('%cIssues:', 'color: #4389A2;');
+      console.log('https://github.com/andreruffert/jsonsort/issues');
+      console.groupEnd();
+    }());
+
   })();
   </script>
 </body>
