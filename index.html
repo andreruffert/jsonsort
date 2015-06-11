@@ -206,8 +206,8 @@
       }
 
       // sort letters
-      a = a.toLowerCase(),
-      b = b.toLowerCase();
+      a = (typeof a === 'string') ? a.toLowerCase() : a,
+      b = (typeof b === 'string') ? b.toLowerCase() : b;
       return a > b ? 1 : a < b ? -1 : 0;
     }
 
