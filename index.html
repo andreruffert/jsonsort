@@ -294,6 +294,7 @@
 
     btnClear.addEventListener('click', function() {
       editor.value = '';
+      disableButtons(true);
       localStorage.removeItem('autosave');
     }, false);
 
