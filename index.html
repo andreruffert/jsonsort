@@ -191,28 +191,47 @@
     }
 
     /**
-     * Recursivly sort an object by keys.
-     * @param  {Object}
-     * @return {Object}
+     * Checks if the value is created by the `Object` constructor.
+     * @param  {*}  value
+     * @return {Boolean}
      */
-    function sortObject(object) {
-      var sortedObj = {};
-      var keys = Object.keys(object);
+    function isPlainObject(value) {
+      return (!!value && typeof value === 'object' && value.constructor === Object);
+    }
 
-      keys.sort(function(key1, key2) {
-        key1 = key1.toLowerCase(), key2 = key2.toLowerCase();
-        return ( key1 < key2 ) ? -1 : (key1 > key2) ? 1 : 0;
-      });
+    function compareDefault(a, b) {
+      // sort numbers
+      if (!isNaN(a) && !isNaN(b)) {
+        return a - b;
+      }
 
-      keys.forEach(function(key) {
-        if (typeof object[key] === 'object' && !(object[key] instanceof Array)) {
-          sortedObj[key] = sortObject(object[key]);
-        } else {
-          sortedObj[key] = object[key];
-        }
-      });
+      // sort letters
+      a = a.toLowerCase(),
+      b = b.toLowerCase();
+      return a > b ? 1 : a < b ? -1 : 0;
+    }
 
-      return sortedObj;
+    /**
+     * Recursively sort objects by its keys.
+     */
+    function sortObject(src, compareFunction) {
+      compareFunction = compareFunction || compareDefault;
+
+      if (Array.isArray(src)) {
+        return src.sort(compareFunction).map(function(item) {
+          return sortObject(item, compareFunction);
+        });
+      }
+
+      if (isPlainObject(src)) {
+        var out = {};
+        Object.keys(src).sort(compareFunction).forEach(function(key) {
+          out[key] = sortObject(src[key], compareFunction);
+        });
+        return out;
+      }
+
+      return src;
     }
 
     function notification(type, msg) {
