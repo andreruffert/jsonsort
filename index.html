@@ -248,6 +248,10 @@
       });
     }
 
+    function disableButtons(state) {
+      toggleAttribute([btnSort, btnClear], 'disabled', state);
+    }
+
     var editor = document.getElementById('js-editor');
     var btnSort = document.getElementById('js-btn-sort');
     var btnClear = document.getElementById('js-btn-clear');
@@ -271,12 +275,10 @@
     }
 
     // Set initial button state
-    toggleAttribute([btnSort, btnClear], 'disabled', !editor.value);
-
+    disableButtons(!editor.value);
 
     editor.addEventListener('input', function() {
-      // Set button state
-      toggleAttribute([btnSort, btnClear], 'disabled', !this.value);
+      disableButtons(!this.value);
     }, false);
 
     btnSort.addEventListener('click', function() {
