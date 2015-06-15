@@ -95,6 +95,7 @@
 
     .editor {
       display: flex;
+      display: block;
       height: calc(99vh - (75px + 45px));
       overflow: auto;
       -webkit-overflow-scrolling: touch;
@@ -120,6 +121,10 @@
          -moz-user-select: none;
           -ms-user-select: none;
               user-select: none;
+    }
+
+    .line-numbers > span {
+      display: block;
     }
 
     .input-area {
@@ -183,10 +188,10 @@
     { <strong>JSONSort</strong>: <i>Sort your JSON</i> }
   </header>
   <main>
-    <div class="editor">
-      <div class="line-numbers" id="js-line-numbers"></div>
+    <label class="editor">
+      <span class="line-numbers" id="js-line-numbers"></span>
       <textarea class="input-area" id="js-editor" cols="30" rows="10" spellcheck="false" wrap="off" autofocus></textarea>
-    </div>
+    </label>
     <button class="button" id="js-btn-sort" title="Sort/format the current data" disabled>
       <svg width="48" height="48" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/>
@@ -303,7 +308,7 @@
 
     function handleLineNumbers(value) {
       lineNumbers.innerHTML = value.split('\n').map(function(value, index) {
-        return '<div>' + (index + 1) + '</div>'
+        return '<span>' + (index + 1) + '</span>'
       }).join('');
     }
 
