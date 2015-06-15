@@ -263,11 +263,12 @@
       return src;
     }
 
-    function notification(type, msg) {
-      var notification = document.querySelector('.notification');
+    function showNotification(type, msg) {
       var types = {
         'error': 'Oh snap! You got an error!'
       };
+
+      notification = notification || document.querySelector('.notification');
 
       if (!notification) {
         notification = document.createElement('div');
@@ -316,6 +317,7 @@
       element.style.height = (element.scrollHeight) + 'px';
     }
 
+    var notification = document.querySelector('.notification');
     var editor = document.getElementById('js-editor');
     var lineNumbers = document.getElementById('js-line-numbers');
     var btnSort = document.getElementById('js-btn-sort');
@@ -354,10 +356,10 @@
       var result = validateJson(editor.value);
 
       if (result.err) {
-        notification('error', '<pre>'+ result.err +'</pre>');
+        showNotification('error', '<pre>'+ result.err +'</pre>');
         return;
       }
-
+      notification && toggleAttribute(notification, 'hidden', true);
       editor.value = JSON.stringify(sortObject(result.data), null, 2);
     }, false);
 
